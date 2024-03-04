@@ -155,5 +155,4 @@ const styles = StyleSheet.create({
     },
 });
 
-// Export the main component
 export default TicTacToe2;
