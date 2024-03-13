@@ -19,7 +19,7 @@ const CardScreen = ({ }) => {
                         source={{ uri: "https://imgs.search.brave.com/AQcmpxQYYhdpmKZGOuoV198p8fqZQLXIQ9-bWd1wfYY/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWM1LmRlcG9zaXRw/aG90b3MuY29tLzEw/MDAxMjgvNDAzL2kv/NDUwL2RlcG9zaXRw/aG90b3NfNDAzMjg1/NS1zdG9jay1waG90/by10aWMtdGFjLXRv/ZS5qcGc" }}
                     />
                 </View>
-                <Text style={styles.text}>Tic Tac Toe</Text>
+             
             </TouchableOpacity>
         </View>
     );
