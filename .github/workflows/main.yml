@@ -1,12 +1,17 @@
-name: React Native CI/CD
+name: Deploy & Build 
 
 on:
   push:
     branches:
       - main
+
+      
   pull_request:
     branches:
       - main
+
+env:
+  CI: false
 
 jobs:
   build:
@@ -16,8 +21,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
+   
       
 
     - name: Install dependencies
