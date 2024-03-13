@@ -11,7 +11,7 @@ const CardScreen = ({ }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.textcmd}>Choose Your Game </Text>
+            <Text style={styles.textcmd}>Chose it The Game </Text>
 
             <TouchableOpacity style={styles.card} onPress={handleCardPress}>
                 <View style={styles.imageContainer}>
