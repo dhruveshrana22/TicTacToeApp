@@ -1,4 +1,4 @@
-name: Deploy & Build 
+name: Deploy & Build
 
 on:
   push:
@@ -16,34 +16,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-    - name: Setup Java
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'adopt'
-        java-version: '17'
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Setup Node 
-      uses: actions/setup-node@v1
-      with:
-         node-version: 20.11.0
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
 
-    - name: Install dependencies
-      run: npm install
-    - name: Give execute permission to Gradle wrapper
-      run: chmod +x android/gradlew
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 20.11.0
 
-    - name: Build Android APK
-      run: |
-        cd android
-        ./gradlew assembleRelease
+      - name: Install dependencies
+        run: npm install
 
-    - name: Upload APK artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: android-app
-        path: ./android/app/build/outputs/apk/release/app-release.apk
+      - name: Give execute permission to Gradle wrapper
+        run: chmod +x android/gradlew
+
+      - name: Build Android APK
+        run: |
+          cd android
+          ./gradlew assembleRelease
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: android-app
+          path: ./android/app/build/outputs/apk/release/app-release.apk
 
   deploy:
     needs: build
@@ -51,11 +53,15 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: Download APK artifact 
+      - name: Download APK artifact
         uses: actions/download-artifact@v2
         with:
-           name: android-app
-           path: ./android/app/build/outputs/apk/release/
+          name: android-app
+          path: ./android/app/build/outputs/apk/release/
+
+      - name: Get commit hash
+        id: commit_hash
+        run: echo "::set-output name=hash::$(git rev-parse --short HEAD)"
 
       - name: Create Release
         id: create_release
@@ -63,10 +69,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
-         tag_name: v${{ steps.commit_hash.outputs.hash }}  # Dynamically generate tag name
-         release_name: Release v${{ steps.commit_hash.outputs.hash }}  # Dynamically generate release name
-         draft: false
-         prerelease: false
+          tag_name: v${{ steps.commit_hash.outputs.hash }}
+          release_name: Release v${{ steps.commit_hash.outputs.hash }}
+          draft: false
+          prerelease: false
+
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
