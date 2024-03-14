@@ -34,7 +34,7 @@ jobs:
    
 
     - name: Build
-      run: npm run TicTacToeApp
+      run: npm run 
 
   
 
