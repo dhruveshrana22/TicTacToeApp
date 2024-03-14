@@ -18,6 +18,12 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+    - name: Setup Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '17'
+
     - name: Setup Node 
       uses: actions/setup-node@v1
       with:
@@ -25,29 +31,49 @@ jobs:
 
     - name: Install dependencies
       run: npm install
+    - name: Give execute permission to Gradle wrapper
+      run: chmod +x android/gradlew
 
-    - name: Build
-      run: npm run 
+    - name: Build Android APK
+      run: |
+        cd android
+        ./gradlew assembleRelease
 
-    - name: Upload artifact
+    - name: Upload APK artifact
       uses: actions/upload-artifact@v2
       with:
-        name: production-files
-        path: ./build.gradle
+        name: android-app
+        path: ./android/app/build/outputs/apk/release/app-release.apk
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    steps:
-      # - name: Download artifact 
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #      name: production-files
-      #      path: ./build
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+    steps:
+      - name: Download APK artifact 
+        uses: actions/download-artifact@v2
         with:
-          github_token: ${{ secrets.TOKEN }}
-          publish_dir: ./build.gradle
+           name: android-app
+           path: ./android/app/build/outputs/apk/release/
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+         tag_name: v${{ steps.commit_hash.outputs.hash }}  # Dynamically generate tag name
+         release_name: Release v${{ steps.commit_hash.outputs.hash }}  # Dynamically generate release name
+         draft: false
+         prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./android/app/build/outputs/apk/release/app-release.apk
+          asset_name: app-release.apk
+          asset_content_type: application/vnd.android.package-archive
