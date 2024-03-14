@@ -11,6 +11,7 @@ const CardScreen = ({ }) => {
 
     return (
         <View style={styles.container}>
+         <Text>Dhruvesh Rana </Text>
             <TouchableOpacity style={styles.card} onPress={handleCardPress}>
                 <View style={styles.imageContainer}>
                     <Image
